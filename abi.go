@@ -119,3 +119,7 @@ func Decode(rawJSON []byte) (DecodedABI, error) {
 
 	return decodedABI, nil
 }
+
+func (v Value) IsCompoundType() bool {
+	return len(v.Components) > 0
+}
