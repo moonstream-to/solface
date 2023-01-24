@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+	"strings"
+	"text/template"
+)
 
 type ItemValueIndex struct {
 	ItemIndex  int
@@ -24,8 +29,9 @@ type DecodedABIWithCompundTypes struct {
 }
 
 type InterfaceSpecification struct {
-	Name string
-	ABI  DecodedABI
+	Name          string
+	ABI           DecodedABI
+	CompoundTypes []CompoundType
 }
 
 func GenerateName(nameCounter *int) string {
@@ -118,6 +124,9 @@ func CompoundSingleValue(val Value, typeCounter, nameCounter *int) (Value, []Com
 	newTypes = append(newTypes, compound)
 
 	result.Type = compound.TypeName
+	if strings.HasSuffix(val.Type, "[]") {
+		result.Type = fmt.Sprintf("%s[]", compound.TypeName)
+	}
 
 	return result, newTypes
 }
@@ -180,12 +189,43 @@ func ResolveCompounds(abi DecodedABI) DecodedABIWithCompundTypes {
 	return result
 }
 
-// func GenerateInterface(interfaceName string, abi DecodedABI) (string, error) {
-// 	const interfaceTemplate = `
-// interface {{.Name}} {
-// {{range .Events}}
-// 	event
-// {{end}}
-// }
-// `
-// }
+func GenerateInterface(interfaceName string, abi DecodedABI, writer io.Writer) error {
+	const interfaceTemplate = `
+interface {{.Name}} {
+	// structs
+{{- range .CompoundTypes}}
+	struct {{.TypeName}} {
+	{{- range .Members}}
+		{{.Value.Type}} {{.Name}};
+	{{- end}}
+	}
+{{- end}}
+
+	// events
+{{- range .ABI.Events}}
+	event {{.Name}}({{- range $i, $input := .Inputs}}{{if $i}}, {{end}}{{.Type}} {{.Name}}{{- end}});
+{{- end}}
+
+	// functions
+{{- range .ABI.Functions}}
+	function {{.Name}}({{- range $i, $input := .Inputs}}{{if $i}}, {{end}}{{.Type}} {{.Name}} {{- end}}) external {{.StateMutability}}{{if .Outputs}} returns ({{- range $i, $output := .Outputs}}{{if $i}}, {{end}}{{.Type}}{{if .Name}} {{.Name}}{{end}}{{- end}}){{end}};
+{{- end}}
+
+	// errors
+{{- range .ABI.Errors}}
+	error {{.Name}}({{- range $i, $error := .Inputs}}{{if $i}}, {{end}}{{.Type}}{{.Name}}{{- end}});
+{{- end}}
+}
+`
+
+	resolved := ResolveCompounds(abi)
+	spec := InterfaceSpecification{Name: interfaceName, ABI: resolved.EnrichedABI, CompoundTypes: resolved.CompoundTypes}
+
+	templ, templateParseErr := template.New("yourface").Parse(interfaceTemplate)
+	if templateParseErr != nil {
+		return templateParseErr
+	}
+	templ.Execute(writer, spec)
+
+	return nil
+}

@@ -134,3 +134,43 @@ func TestResolveCompoundsDiamondCutFacet(t *testing.T) {
 		t.Fatalf("Expected 0 compound error inputs. Actual: %d", len(errorInputs))
 	}
 }
+
+func TestGenerateInterfaceDiamondCutFacet(t *testing.T) {
+	contents, readErr := os.ReadFile("fixtures/abis/DiamondCutFacet.json")
+	if readErr != nil {
+		t.Fatal("Could not read file containing ABI")
+	}
+
+	abi, decodeErr := Decode(contents)
+	if decodeErr != nil {
+		t.Fatalf("Error decoding ABI: %s", decodeErr.Error())
+	}
+
+	// Replace io.Discard with os.Stdout to inspect output:
+	err := GenerateInterface("IDiamondCutFacet", abi, os.Stdout)
+	// GenerateInterface("IDiamondCutFacet", abi, io.Discard)
+
+	if err != nil {
+		t.Fatalf("Error generating interface: %s", err.Error())
+	}
+}
+
+func TestGenerateInterfaceOwnableERC20(t *testing.T) {
+	contents, readErr := os.ReadFile("fixtures/abis/OwnableERC20.json")
+	if readErr != nil {
+		t.Fatal("Could not read file containing ABI")
+	}
+
+	abi, decodeErr := Decode(contents)
+	if decodeErr != nil {
+		t.Fatalf("Error decoding ABI: %s", decodeErr.Error())
+	}
+
+	// Replace io.Discard with os.Stdout to inspect output:
+	err := GenerateInterface("IOwnableERC20", abi, os.Stdout)
+	// GenerateInterface("IDiamondCutFacet", abi, io.Discard)
+
+	if err != nil {
+		t.Fatalf("Error generating interface: %s", err.Error())
+	}
+}

@@ -36,7 +36,7 @@ type FunctionItem struct {
 
 type EventItem struct {
 	Type      string
-	Name      string `json:"name,omitempty"`
+	Name      string `json:"name"`
 	Inputs    []EventArgument
 	Anonymous bool
 }
