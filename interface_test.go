@@ -100,9 +100,37 @@ func TestResolveCompoundsDiamondCutFacet(t *testing.T) {
 		t.Fatalf("Error decoding ABI: %s", decodeErr.Error())
 	}
 
+	oldEventInputs, oldFunctionInputs, oldFunctionOutputs, oldErrorInputs := FindCompoundTypes(abi)
+	if len(oldEventInputs) != 1 {
+		t.Fatalf("Expected 1 compound event inputs. Actual: %d", len(oldEventInputs))
+	}
+	if len(oldFunctionInputs) != 1 {
+		t.Fatalf("Expected 1 compound oldFunction inputs. Actual: %d", len(oldFunctionInputs))
+	}
+	if len(oldFunctionOutputs) != 0 {
+		t.Fatalf("Expected 0 compound oldFunction outputs. Actual: %d", len(oldFunctionOutputs))
+	}
+	if len(oldErrorInputs) != 0 {
+		t.Fatalf("Expected 0 compound oldError inputs. Actual: %d", len(oldErrorInputs))
+	}
+
 	enrichedABI := ResolveCompounds(abi)
 
 	if len(enrichedABI.CompoundTypes) != 2 {
 		t.Fatalf("Expected 2 compound types. Actual: %d", len(enrichedABI.CompoundTypes))
+	}
+
+	eventInputs, functionInputs, functionOutputs, errorInputs := FindCompoundTypes(enrichedABI.EnrichedABI)
+	if len(eventInputs) != 0 {
+		t.Fatalf("Expected 0 compound event inputs. Actual: %d", len(eventInputs))
+	}
+	if len(functionInputs) != 0 {
+		t.Fatalf("Expected 0 compound function inputs. Actual: %d", len(functionInputs))
+	}
+	if len(functionOutputs) != 0 {
+		t.Fatalf("Expected 0 compound function outputs. Actual: %d", len(functionOutputs))
+	}
+	if len(errorInputs) != 0 {
+		t.Fatalf("Expected 0 compound error inputs. Actual: %d", len(errorInputs))
 	}
 }
