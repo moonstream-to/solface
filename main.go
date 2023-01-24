@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+var VERSION string = "0.0.2"
+
 func main() {
 	var interfaceName string
 	flag.StringVar(&interfaceName, "name", "", "Name for Solidity interface you would like to generate")
