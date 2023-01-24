@@ -1,3 +1,3 @@
-module github.com/bugout-dev/yourface
+module github.com/bugout-dev/solface
 
 go 1.19

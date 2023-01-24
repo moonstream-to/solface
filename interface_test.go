@@ -169,7 +169,7 @@ func TestGenerateInterfaceOwnableERC20(t *testing.T) {
 
 	// Replace io.Discard with os.Stdout to inspect output:
 	// err := GenerateInterface("IOwnableERC20", abi, os.Stdout)
-	err := GenerateInterface("IDiamondCutFacet", abi, io.Discard)
+	err := GenerateInterface("IOwnableERC20", abi, io.Discard)
 
 	if err != nil {
 		t.Fatalf("Error generating interface: %s", err.Error())
