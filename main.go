@@ -15,8 +15,9 @@ func main() {
 	flag.StringVar(&interfaceName, "name", "", "Name for Solidity interface you would like to generate")
 
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "%s -name <interface name> {<path to ABI file> | stdin}\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "%s -name <interface name> {<path to ABI file> | stdin}\n\n", os.Args[0])
 		flag.PrintDefaults()
+		fmt.Fprintf(flag.CommandLine.Output(), "\nsolface version %s\n", VERSION)
 	}
 
 	flag.Parse()
