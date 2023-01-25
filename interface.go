@@ -47,6 +47,27 @@ func GenerateType(typeCounter *int) string {
 	return result
 }
 
+func SolidityTypeRequiresLocation(solidityType string) bool {
+	if strings.HasSuffix(solidityType, "[]") {
+		return true
+	} else if solidityType == "string" {
+		return true
+	} else if solidityType == "bytes" {
+		return true
+	} else if solidityType == "bool" {
+		return false
+	} else if strings.HasPrefix(solidityType, "uint") {
+		return false
+	} else if solidityType == "address" {
+		return false
+	} else if strings.HasPrefix(solidityType, "bytes") {
+		// It is not exactly "bytes" because that was handled above
+		return false
+	}
+
+	return true
+}
+
 // Return values specify which items in the following arrays are compound types (by index):
 // 1. Event inputs
 // 2. Function inputs
@@ -211,7 +232,7 @@ interface {{.Name}} {
 
 	// functions
 {{- range .ABI.Functions}}
-	function {{.Name}}({{- range $i, $input := .Inputs}}{{if $i}}, {{end}}{{.Type}} {{.Name}} {{- end}}) external {{.StateMutability}}{{if .Outputs}} returns ({{- range $i, $output := .Outputs}}{{if $i}}, {{end}}{{.Type}}{{if .Name}} {{.Name}}{{end}}{{- end}}){{end}};
+	function {{.Name}}({{- range $i, $input := .Inputs}}{{if $i}}, {{end}}{{.Type}}{{if (needsMemory .Type)}} memory{{end}} {{.Name}} {{- end}}) external {{if (or (eq .StateMutability "view") (eq .StateMutability "pure"))}}{{.StateMutability}}{{end}}{{if .Outputs}} returns ({{- range $i, $output := .Outputs}}{{if $i}}, {{end}}{{.Type}}{{if (needsMemory .Type)}} memory{{end}}{{if .Name}} {{.Name}}{{end}}{{- end}}){{end}};
 {{- end}}
 
 	// errors
@@ -224,7 +245,11 @@ interface {{.Name}} {
 	resolved := ResolveCompounds(abi)
 	spec := InterfaceSpecification{Name: interfaceName, ABI: resolved.EnrichedABI, CompoundTypes: resolved.CompoundTypes, SolfaceVersion: VERSION}
 
-	templ, templateParseErr := template.New("yourface").Parse(interfaceTemplate)
+	templateFuncs := map[string]any{
+		"needsMemory": SolidityTypeRequiresLocation,
+	}
+
+	templ, templateParseErr := template.New("yourface").Funcs(templateFuncs).Parse(interfaceTemplate)
 	if templateParseErr != nil {
 		return templateParseErr
 	}
