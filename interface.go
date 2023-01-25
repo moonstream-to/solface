@@ -237,7 +237,7 @@ interface {{.Name}} {
 
 	// errors
 {{- range .ABI.Errors}}
-	error {{.Name}}({{- range $i, $error := .Inputs}}{{if $i}}, {{end}}{{.Type}}{{.Name}}{{- end}});
+	error {{.Name}}({{- range $i, $error := .Inputs}}{{if $i}}, {{end}}{{.Type}} {{.Name}}{{- end}});
 {{- end}}
 }
 `
