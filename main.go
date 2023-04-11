@@ -50,7 +50,12 @@ func main() {
 		log.Fatalf("Error decoding ABI: %s", decodeErr.Error())
 	}
 
-	generateErr := GenerateInterface(interfaceName, abi, os.Stdout)
+	annotations, annotationErr := Annotate(abi)
+	if annotationErr != nil && addAnnotations {
+		log.Fatalf("Error generating annotations: %s", annotationErr.Error())
+	}
+
+	generateErr := GenerateInterface(interfaceName, abi, annotations, addAnnotations, os.Stdout)
 	if generateErr != nil {
 		log.Fatalf("Error generating interface (%s): %s", interfaceName, generateErr.Error())
 	}
