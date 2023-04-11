@@ -2,6 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
+
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 /**
@@ -51,6 +55,11 @@ type DecodedABI struct {
 	Events    []EventItem
 	Functions []FunctionItem
 	Errors    []ErrorItem
+}
+
+type Annotations struct {
+	InterfaceID       []byte
+	FunctionSelectors [][]byte
 }
 
 func Decode(rawJSON []byte) (DecodedABI, error) {
@@ -118,6 +127,33 @@ func Decode(rawJSON []byte) (DecodedABI, error) {
 	}
 
 	return decodedABI, nil
+}
+
+func MethodSelector(function FunctionItem) []byte {
+	argumentTypes := make([]string, len(function.Inputs))
+	for i, input := range function.Inputs {
+		argumentTypes[i] = input.Type
+	}
+	argumentTypesString := strings.Join(argumentTypes, ",")
+	signature := fmt.Sprintf("%s(%s)", function.Name, argumentTypesString)
+	return crypto.Keccak256([]byte(signature))[:4]
+}
+
+func Annotate(decodedABI DecodedABI) (Annotations, error) {
+	var annotations Annotations
+	annotations.InterfaceID = []byte{0x0, 0x0, 0x0, 0x0}
+	annotations.FunctionSelectors = make([][]byte, len(decodedABI.Functions))
+	for i, functionItem := range decodedABI.Functions {
+		selector := MethodSelector(functionItem)
+		annotations.FunctionSelectors[i] = selector
+
+		// XOR into InterfaceID byte by byte
+		annotations.InterfaceID[0] ^= selector[0]
+		annotations.InterfaceID[1] ^= selector[1]
+		annotations.InterfaceID[2] ^= selector[2]
+		annotations.InterfaceID[3] ^= selector[3]
+	}
+	return annotations, nil
 }
 
 func (v Value) IsCompoundType() bool {
