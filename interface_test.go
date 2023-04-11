@@ -147,9 +147,12 @@ func TestGenerateInterfaceDiamondCutFacet(t *testing.T) {
 		t.Fatalf("Error decoding ABI: %s", decodeErr.Error())
 	}
 
+	var annotations Annotations
+	includeAnnotations := false
+
 	// Replace io.Discard with os.Stdout to inspect output:
 	// err := GenerateInterface("IDiamondCutFacet", abi, os.Stdout)
-	err := GenerateInterface("IDiamondCutFacet", abi, io.Discard)
+	err := GenerateInterface("IDiamondCutFacet", abi, annotations, includeAnnotations, io.Discard)
 
 	if err != nil {
 		t.Fatalf("Error generating interface: %s", err.Error())
@@ -167,9 +170,12 @@ func TestGenerateInterfaceOwnableERC20(t *testing.T) {
 		t.Fatalf("Error decoding ABI: %s", decodeErr.Error())
 	}
 
+	var annotations Annotations
+	includeAnnotations := false
+
 	// Replace io.Discard with os.Stdout to inspect output:
 	// err := GenerateInterface("IOwnableERC20", abi, os.Stdout)
-	err := GenerateInterface("IOwnableERC20", abi, io.Discard)
+	err := GenerateInterface("IOwnableERC20", abi, annotations, includeAnnotations, io.Discard)
 
 	if err != nil {
 		t.Fatalf("Error generating interface: %s", err.Error())

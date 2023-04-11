@@ -1,9 +1,43 @@
 package main
 
 import (
+	"encoding/hex"
 	"os"
 	"testing"
 )
+
+func TestMethodSelectorOnERC721SafeTransferFromWithoutCalldata(t *testing.T) {
+	functionItem := FunctionItem{Type: "function", Name: "safeTransferFrom", Inputs: []Value{
+		{Name: "from", Type: "address"},
+		{Name: "to", Type: "address"},
+		{Name: "tokenId", Type: "uint256"},
+	}}
+
+	selector := MethodSelector(functionItem)
+
+	expectedSelectorString := "42842e0e"
+	selectorString := hex.EncodeToString(selector)
+	if selectorString != expectedSelectorString {
+		t.Fatalf("Incorrect method selector for safeTransferFrom(address,address,uint256). Expected: %s, actual: %s", expectedSelectorString, selectorString)
+	}
+}
+
+func TestMethodSelectorOnERC721SafeTransferFromWithCalldata(t *testing.T) {
+	functionItem := FunctionItem{Type: "function", Name: "safeTransferFrom", Inputs: []Value{
+		{Name: "from", Type: "address"},
+		{Name: "to", Type: "address"},
+		{Name: "tokenId", Type: "uint256"},
+		{Name: "data", Type: "bytes"},
+	}}
+
+	selector := MethodSelector(functionItem)
+
+	expectedSelectorString := "b88d4fde"
+	selectorString := hex.EncodeToString(selector)
+	if selectorString != expectedSelectorString {
+		t.Fatalf("Incorrect method selector for safeTransferFrom(address,address,uint256,bytes). Expected: %s, actual: %s", expectedSelectorString, selectorString)
+	}
+}
 
 func TestDecodeOwnableERC20(t *testing.T) {
 	contents, readErr := os.ReadFile("fixtures/abis/OwnableERC20.json")
@@ -212,5 +246,28 @@ func TestSingleFunction(t *testing.T) {
 		if outputItem.Type != expectedOutputTypes[i] {
 			t.Fatalf("Output item %d: Expected type : %s. Actual type: %s", i, expectedOutputTypes[i], outputItem.Type)
 		}
+	}
+}
+
+func TestERC20InterfaceID(t *testing.T) {
+	contents, readErr := os.ReadFile("fixtures/abis/ERC20.json")
+	if readErr != nil {
+		t.Fatal("Could not read file containing ABI")
+	}
+
+	decodedABI, decodeErr := Decode(contents)
+	if decodeErr != nil {
+		t.Fatalf("Could not decode ABI: %s", decodeErr.Error())
+	}
+
+	annotations, err := Annotate(decodedABI)
+	if err != nil {
+		t.Fatalf("Could not generate annotations: %s", err.Error())
+	}
+
+	expectedInterfaceID := "36372b07"
+	interfaceId := hex.EncodeToString(annotations.InterfaceID)
+	if interfaceId != expectedInterfaceID {
+		t.Fatalf("Incorrect interface ID generated: expected: %s, actual: %s", expectedInterfaceID, interfaceId)
 	}
 }

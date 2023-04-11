@@ -8,14 +8,16 @@ import (
 	"os"
 )
 
-var VERSION string = "0.0.4"
+var VERSION string = "0.0.5"
 
 func main() {
 	var interfaceName string
+	var addAnnotations bool
 	flag.StringVar(&interfaceName, "name", "", "Name for Solidity interface you would like to generate")
+	flag.BoolVar(&addAnnotations, "annotations", false, "If present, adds annotations to generated interface. Annotations include: interface ID, method selectors, event signatures.")
 
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "%s -name <interface name> {<path to ABI file> | stdin}\n\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "%s -name <interface name> [-annotations] {<path to ABI file> | stdin}\n\n", os.Args[0])
 		flag.PrintDefaults()
 		fmt.Fprintf(flag.CommandLine.Output(), "\nsolface version %s\n", VERSION)
 	}
@@ -48,7 +50,12 @@ func main() {
 		log.Fatalf("Error decoding ABI: %s", decodeErr.Error())
 	}
 
-	generateErr := GenerateInterface(interfaceName, abi, os.Stdout)
+	annotations, annotationErr := Annotate(abi)
+	if annotationErr != nil && addAnnotations {
+		log.Fatalf("Error generating annotations: %s", annotationErr.Error())
+	}
+
+	generateErr := GenerateInterface(interfaceName, abi, annotations, addAnnotations, os.Stdout)
 	if generateErr != nil {
 		log.Fatalf("Error generating interface (%s): %s", interfaceName, generateErr.Error())
 	}
