@@ -1,4 +1,4 @@
-module github.com/bugout-dev/solface
+module github.com/moonstream-to/solface
 
 go 1.19
 
