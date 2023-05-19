@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var VERSION string = "0.0.5"
+var VERSION string = "0.1.0"
 
 func main() {
 	var interfaceName string
