@@ -14,19 +14,25 @@ var VERSION string = "0.2.0"
 // Implements the solface CLI.
 func main() {
 	var interfaceName, license, pragma string
-	var addAnnotations bool
-	flag.StringVar(&interfaceName, "name", "", "Name for Solidity interface you would like to generate")
+	var addAnnotations, version bool
+	flag.BoolVar(&version, "version", false, "If present, solface prints its version and exits.")
+	flag.StringVar(&interfaceName, "name", "", "Name for Solidity interface you would like to generate.")
 	flag.BoolVar(&addAnnotations, "annotations", false, "If present, adds annotations to generated interface. Annotations include: interface ID, method selectors, event signatures.")
-	flag.StringVar(&license, "license", "", "License to include in generated interface - adds a comment at the top of the output with this as the SPDX identifier")
-	flag.StringVar(&pragma, "pragma", "", "Solidity pragma to include in generated interface - adds this parameter as the pragma constraint at the top of the output")
+	flag.StringVar(&license, "license", "", "License to include in generated interface - adds a comment at the top of the output with this as the SPDX identifier.")
+	flag.StringVar(&pragma, "pragma", "", "Solidity pragma to include in generated interface - adds this parameter as the pragma constraint at the top of the output.")
 
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "%s -name <interface name> [-annotations] {<path to ABI file> | stdin}\n\n", os.Args[0])
 		flag.PrintDefaults()
-		fmt.Fprintf(flag.CommandLine.Output(), "\nsolface version %s\n", VERSION)
+		fmt.Fprintf(flag.CommandLine.Output(), "\nsolface version v%s\n", VERSION)
 	}
 
 	flag.Parse()
+
+	if version {
+		fmt.Printf("v%s\n", VERSION)
+		os.Exit(0)
+	}
 
 	if interfaceName == "" {
 		flag.Usage()
