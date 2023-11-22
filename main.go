@@ -8,8 +8,10 @@ import (
 	"os"
 )
 
-var VERSION string = "0.1.1"
+// The current version of solface.
+var VERSION string = "0.1.2"
 
+// Implements the solface CLI.
 func main() {
 	var interfaceName, license, pragma string
 	var addAnnotations bool

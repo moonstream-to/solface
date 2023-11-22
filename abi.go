@@ -8,28 +8,25 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-/**
- * ABIs are decoded according to the Solidity Contract ABI specification:
- * https://docs.soliditylang.org/en/v0.8.17/abi-spec.html
- *
- * This decoder uses the specification as of Solidity v0.8.17.
- */
-
+// Represents a type declaration in an ABI.
 type TypeDeclaration struct {
 	Type string
 }
 
+// Represents a value in an ABI.
 type Value struct {
 	Name       string
 	Type       string
 	Components []Value
 }
 
+// Represents a parameter for an event in an ABI.
 type EventArgument struct {
 	Value
 	Indexed bool
 }
 
+// Represents a smart contract method in an ABI.
 type FunctionItem struct {
 	Type            string
 	Name            string  `json:"name,omitempty"`
@@ -38,6 +35,7 @@ type FunctionItem struct {
 	StateMutability string  `json:"stateMutability,omitempty"`
 }
 
+// Represents a log event in an ABI.
 type EventItem struct {
 	Type      string
 	Name      string `json:"name"`
@@ -45,22 +43,32 @@ type EventItem struct {
 	Anonymous bool
 }
 
+// Represents an exception/error in an ABI.
 type ErrorItem struct {
 	Type   string
 	Name   string
 	Inputs []Value
 }
 
+// Represents a parsed ABI, usable in the rest of solface.
 type DecodedABI struct {
 	Events    []EventItem
 	Functions []FunctionItem
 	Errors    []ErrorItem
 }
 
+// Represents annotations for an ABI.
 type Annotations struct {
 	InterfaceID       []byte
 	FunctionSelectors [][]byte
 }
+
+// Decodes an ABI from its JSON representation (presented as a byte array).
+//
+// ABIs are decoded according to the Solidity Contract ABI specification:
+// https://docs.soliditylang.org/en/v0.8.17/abi-spec.html
+//
+// This decoder uses the specification as of Solidity v0.8.17.
 
 func Decode(rawJSON []byte) (DecodedABI, error) {
 	var typeDeclarations []TypeDeclaration
@@ -129,6 +137,7 @@ func Decode(rawJSON []byte) (DecodedABI, error) {
 	return decodedABI, nil
 }
 
+// Calculates the 4-byte method selector for a given ABI function.
 func MethodSelector(function FunctionItem) []byte {
 	argumentTypes := make([]string, len(function.Inputs))
 	for i, input := range function.Inputs {
@@ -139,6 +148,7 @@ func MethodSelector(function FunctionItem) []byte {
 	return crypto.Keccak256([]byte(signature))[:4]
 }
 
+// Generates annotations for a decoded ABI.
 func Annotate(decodedABI DecodedABI) (Annotations, error) {
 	var annotations Annotations
 	annotations.InterfaceID = []byte{0x0, 0x0, 0x0, 0x0}
@@ -156,6 +166,8 @@ func Annotate(decodedABI DecodedABI) (Annotations, error) {
 	return annotations, nil
 }
 
+// Returns true if the given value is a compound type (i.e. composed of other types like a struct or array)
+// and false otherwise.
 func (v Value) IsCompoundType() bool {
 	return len(v.Components) > 0
 }
