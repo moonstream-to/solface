@@ -181,3 +181,26 @@ func TestGenerateInterfaceOwnableERC20(t *testing.T) {
 		t.Fatalf("Error generating interface: %s", err.Error())
 	}
 }
+
+func TestGenerateInterfaceUniswapV3Factory(t *testing.T) {
+	contents, readErr := os.ReadFile("../fixtures/abis/UniswapV3Factory.json")
+	if readErr != nil {
+		t.Fatal("Could not read file containing ABI")
+	}
+
+	abi, decodeErr := Decode(contents)
+	if decodeErr != nil {
+		t.Fatalf("Error decoding ABI: %s", decodeErr.Error())
+	}
+
+	var annotations Annotations
+	includeAnnotations := false
+
+	// Replace io.Discard with os.Stdout to inspect output:
+	// err := GenerateInterface("IUniswapV3Factory", "UNLICENSED", "^8.20.0", abi, annotations, includeAnnotations, os.Stdout)
+	err := GenerateInterface("IUniswapV3Factory", "UNLICENSED", "^8.20.0", abi, annotations, includeAnnotations, io.Discard)
+
+	if err != nil {
+		t.Fatalf("Error generating interface: %s", err.Error())
+	}
+}
