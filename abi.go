@@ -15,9 +15,10 @@ type TypeDeclaration struct {
 
 // Represents a value in an ABI.
 type Value struct {
-	Name       string
-	Type       string
-	Components []Value
+	Name         string
+	Type         string
+	InternalType string `json:"internalType,omitempty"`
+	Components   []Value
 }
 
 // Represents a parameter for an event in an ABI.

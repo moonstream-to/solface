@@ -15,4 +15,4 @@ jobs:
           go test ./... -v
       - name: Print solface version
         run: |
-          go run ./... -h 2>&1 | tail -n1
+          go run ./... -version

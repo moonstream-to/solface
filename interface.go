@@ -63,9 +63,25 @@ func GenerateName(nameCounter *int) string {
 	return result
 }
 
+// Parses the name of an internal type and either returns that name (for structs) or "Compound" (for
+// any other type).
+// For nested structs (e.g. structs defined in other contracts or interfaces), this only returns the
+// final component of the name.
+func ParseInternalType(internalType string) string {
+	if !strings.HasPrefix(internalType, "struct") {
+		return "Compound"
+	}
+
+	structQualifiedName := strings.TrimPrefix(internalType, "struct ")
+	structNameComponents := strings.Split(structQualifiedName, ".")
+	structName := structNameComponents[len(structNameComponents)-1]
+	return structName
+}
+
 // Generates a fresh name for an anonymous compound type.
-func GenerateType(typeCounter *int) string {
-	result := fmt.Sprintf("Compound%d", *typeCounter)
+func GenerateType(typeCounter *int, internalType string) string {
+	typeName := ParseInternalType(internalType)
+	result := fmt.Sprintf("%s%d", typeName, *typeCounter)
 	(*typeCounter) += 1
 	return result
 }
@@ -168,7 +184,7 @@ func CompoundSingleValue(val Value, typeCounter, nameCounter *int) (Value, []Com
 	}
 
 	var compound CompoundType
-	compound.TypeName = GenerateType(typeCounter)
+	compound.TypeName = GenerateType(typeCounter, val.InternalType)
 	compound.Members = make([]NamedValue, len(updatedComponents))
 	for i, component := range updatedComponents {
 		memberName := component.Name
