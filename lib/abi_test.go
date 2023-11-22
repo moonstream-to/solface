@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"encoding/hex"
@@ -40,7 +40,7 @@ func TestMethodSelectorOnERC721SafeTransferFromWithCalldata(t *testing.T) {
 }
 
 func TestDecodeOwnableERC20(t *testing.T) {
-	contents, readErr := os.ReadFile("fixtures/abis/OwnableERC20.json")
+	contents, readErr := os.ReadFile("../fixtures/abis/OwnableERC20.json")
 	if readErr != nil {
 		t.Fatal("Could not read file containing ABI")
 	}
@@ -250,7 +250,7 @@ func TestSingleFunction(t *testing.T) {
 }
 
 func TestERC20InterfaceID(t *testing.T) {
-	contents, readErr := os.ReadFile("fixtures/abis/ERC20.json")
+	contents, readErr := os.ReadFile("../fixtures/abis/ERC20.json")
 	if readErr != nil {
 		t.Fatal("Could not read file containing ABI")
 	}
