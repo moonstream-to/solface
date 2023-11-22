@@ -197,8 +197,8 @@ func TestGenerateInterfaceUniswapV3Factory(t *testing.T) {
 	includeAnnotations := false
 
 	// Replace io.Discard with os.Stdout to inspect output:
-	err := GenerateInterface("IUniswapV3Factory", "UNLICENSED", "^8.20.0", abi, annotations, includeAnnotations, os.Stdout)
-	// err := GenerateInterface("IUniswapV3Factory", "UNLICENSED", "^8.20.0", abi, annotations, includeAnnotations, io.Discard)
+	// err := GenerateInterface("IUniswapV3Factory", "UNLICENSED", "^8.20.0", abi, annotations, includeAnnotations, os.Stdout)
+	err := GenerateInterface("IUniswapV3Factory", "UNLICENSED", "^8.20.0", abi, annotations, includeAnnotations, io.Discard)
 
 	if err != nil {
 		t.Fatalf("Error generating interface: %s", err.Error())
