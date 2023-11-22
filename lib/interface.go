@@ -89,7 +89,7 @@ func GenerateType(typeCounter *int, internalType string) string {
 // This function returns true if the given Solidity type requires a location modifier ("memory", "storage", "calldata")
 // when used as a function parameter or return value.
 func SolidityTypeRequiresLocation(solidityType string) bool {
-	if strings.HasSuffix(solidityType, "[]") {
+	if strings.HasSuffix(solidityType, "]") {
 		return true
 	} else if solidityType == "string" {
 		return true
@@ -97,9 +97,11 @@ func SolidityTypeRequiresLocation(solidityType string) bool {
 		return true
 	} else if solidityType == "bool" {
 		return false
+	} else if solidityType == "address" {
+		return false
 	} else if strings.HasPrefix(solidityType, "uint") {
 		return false
-	} else if solidityType == "address" {
+	} else if strings.HasPrefix(solidityType, "int") {
 		return false
 	} else if strings.HasPrefix(solidityType, "bytes") {
 		// It is not exactly "bytes" because that was handled above. "bytes[]" also handled above.
