@@ -13,3 +13,6 @@ jobs:
       - name: Test solface
         run: |
           go test ./... -v
+      - name: Print solface version
+        run: |
+          go run ./... -h 2>&1 | tail -n1
