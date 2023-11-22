@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"io"
@@ -8,7 +8,7 @@ import (
 )
 
 func TestFindCompoundTypesOnDiamondCutFacetABI(t *testing.T) {
-	contents, readErr := os.ReadFile("fixtures/abis/DiamondCutFacet.json")
+	contents, readErr := os.ReadFile("../fixtures/abis/DiamondCutFacet.json")
 	if readErr != nil {
 		t.Fatal("Could not read file containing ABI")
 	}
@@ -91,7 +91,7 @@ func TestCompoundSingleValueDeep(t *testing.T) {
 }
 
 func TestResolveCompoundsDiamondCutFacet(t *testing.T) {
-	contents, readErr := os.ReadFile("fixtures/abis/DiamondCutFacet.json")
+	contents, readErr := os.ReadFile("../fixtures/abis/DiamondCutFacet.json")
 	if readErr != nil {
 		t.Fatal("Could not read file containing ABI")
 	}
@@ -137,7 +137,7 @@ func TestResolveCompoundsDiamondCutFacet(t *testing.T) {
 }
 
 func TestGenerateInterfaceDiamondCutFacet(t *testing.T) {
-	contents, readErr := os.ReadFile("fixtures/abis/DiamondCutFacet.json")
+	contents, readErr := os.ReadFile("../fixtures/abis/DiamondCutFacet.json")
 	if readErr != nil {
 		t.Fatal("Could not read file containing ABI")
 	}
@@ -160,7 +160,7 @@ func TestGenerateInterfaceDiamondCutFacet(t *testing.T) {
 }
 
 func TestGenerateInterfaceOwnableERC20(t *testing.T) {
-	contents, readErr := os.ReadFile("fixtures/abis/OwnableERC20.json")
+	contents, readErr := os.ReadFile("../fixtures/abis/OwnableERC20.json")
 	if readErr != nil {
 		t.Fatal("Could not read file containing ABI")
 	}

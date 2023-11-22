@@ -6,10 +6,9 @@ import (
 	"io"
 	"log"
 	"os"
-)
 
-// The current version of solface.
-var VERSION string = "0.2.0"
+	"github.com/moonstream-to/solface/lib"
+)
 
 // Implements the solface CLI.
 func main() {
@@ -24,13 +23,13 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "%s -name <interface name> [-annotations] {<path to ABI file> | stdin}\n\n", os.Args[0])
 		flag.PrintDefaults()
-		fmt.Fprintf(flag.CommandLine.Output(), "\nsolface version v%s\n", VERSION)
+		fmt.Fprintf(flag.CommandLine.Output(), "\nsolface version v%s\n", lib.VERSION)
 	}
 
 	flag.Parse()
 
 	if version {
-		fmt.Printf("v%s\n", VERSION)
+		fmt.Printf("v%s\n", lib.VERSION)
 		os.Exit(0)
 	}
 
@@ -55,17 +54,17 @@ func main() {
 		log.Fatalf("Error reading ABI: %s", readErr.Error())
 	}
 
-	abi, decodeErr := Decode(contents)
+	abi, decodeErr := lib.Decode(contents)
 	if decodeErr != nil {
 		log.Fatalf("Error decoding ABI: %s", decodeErr.Error())
 	}
 
-	annotations, annotationErr := Annotate(abi)
+	annotations, annotationErr := lib.Annotate(abi)
 	if annotationErr != nil && addAnnotations {
 		log.Fatalf("Error generating annotations: %s", annotationErr.Error())
 	}
 
-	generateErr := GenerateInterface(interfaceName, license, pragma, abi, annotations, addAnnotations, os.Stdout)
+	generateErr := lib.GenerateInterface(interfaceName, license, pragma, abi, annotations, addAnnotations, os.Stdout)
 	if generateErr != nil {
 		log.Fatalf("Error generating interface (%s): %s", interfaceName, generateErr.Error())
 	}
