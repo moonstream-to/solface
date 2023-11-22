@@ -11,10 +11,12 @@ import (
 var VERSION string = "0.1.0"
 
 func main() {
-	var interfaceName string
+	var interfaceName, license, pragma string
 	var addAnnotations bool
 	flag.StringVar(&interfaceName, "name", "", "Name for Solidity interface you would like to generate")
 	flag.BoolVar(&addAnnotations, "annotations", false, "If present, adds annotations to generated interface. Annotations include: interface ID, method selectors, event signatures.")
+	flag.StringVar(&license, "license", "", "License to include in generated interface - adds a comment at the top of the output with this as the SPDX identifier")
+	flag.StringVar(&pragma, "pragma", "", "Solidity pragma to include in generated interface - adds this parameter as the pragma constraint at the top of the output")
 
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "%s -name <interface name> [-annotations] {<path to ABI file> | stdin}\n\n", os.Args[0])
@@ -55,7 +57,7 @@ func main() {
 		log.Fatalf("Error generating annotations: %s", annotationErr.Error())
 	}
 
-	generateErr := GenerateInterface(interfaceName, abi, annotations, addAnnotations, os.Stdout)
+	generateErr := GenerateInterface(interfaceName, license, pragma, abi, annotations, addAnnotations, os.Stdout)
 	if generateErr != nil {
 		log.Fatalf("Error generating interface (%s): %s", interfaceName, generateErr.Error())
 	}

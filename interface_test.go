@@ -151,8 +151,8 @@ func TestGenerateInterfaceDiamondCutFacet(t *testing.T) {
 	includeAnnotations := false
 
 	// Replace io.Discard with os.Stdout to inspect output:
-	// err := GenerateInterface("IDiamondCutFacet", abi, os.Stdout)
-	err := GenerateInterface("IDiamondCutFacet", abi, annotations, includeAnnotations, io.Discard)
+	// err := GenerateInterface("IDiamondCutFacet", "", "", abi, annotations, includeAnnotations, os.Stdout)
+	err := GenerateInterface("IDiamondCutFacet", "", "", abi, annotations, includeAnnotations, io.Discard)
 
 	if err != nil {
 		t.Fatalf("Error generating interface: %s", err.Error())
@@ -174,8 +174,8 @@ func TestGenerateInterfaceOwnableERC20(t *testing.T) {
 	includeAnnotations := false
 
 	// Replace io.Discard with os.Stdout to inspect output:
-	// err := GenerateInterface("IOwnableERC20", abi, os.Stdout)
-	err := GenerateInterface("IOwnableERC20", abi, annotations, includeAnnotations, io.Discard)
+	// err := GenerateInterface("IOwnableERC20", "Apache-2.0", "^8.20.0", abi, annotations, includeAnnotations, os.Stdout)
+	err := GenerateInterface("IOwnableERC20", "Apache-2.0", "^8.20.0", abi, annotations, includeAnnotations, io.Discard)
 
 	if err != nil {
 		t.Fatalf("Error generating interface: %s", err.Error())
