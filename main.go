@@ -9,7 +9,7 @@ import (
 )
 
 // The current version of solface.
-var VERSION string = "0.1.2"
+var VERSION string = "0.2.0"
 
 // Implements the solface CLI.
 func main() {
